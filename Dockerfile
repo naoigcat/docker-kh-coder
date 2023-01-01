@@ -2,8 +2,8 @@ FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=ja_JP.UTF-8 \
-    LC_ALL=${LANG} \
-    LANGUAGE=${LANG} \
+    LC_ALL=ja_JP.UTF-8 \
+    LANGUAGE=ja_JP.UTF-8 \
     PERL_MM_USE_DEFAULT=1 \
     TZ=Asia/Tokyo
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
@@ -12,16 +12,18 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     apt-get -y install \
         fonts-noto \
         git \
-        ibus-mozc \
+        ibus-anthy \
         language-pack-ja \
         language-pack-ja-base \
         leafpad \
         locales \
         software-properties-common \
         supervisor \
+        x11vnc \
         xvfb \
         xfce4 \
-        x11vnc \
+        xfce4-terminal \
+        xfce4-goodies \
         wget \
     && \
     apt-get clean && \
@@ -30,6 +32,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     x11vnc -storepasswd secret ~/.vnc/passwd && \
     locale-gen ja_JP.UTF-8 && \
     localedef -f UTF-8 -i ja_JP ja_JP.utf8 && \
+    echo LANG=$LANG >> /etc/default/locale && \
     LANG=C xdg-user-dirs-update --force
 RUN apt-get -y update && \
     apt-get -y install \
