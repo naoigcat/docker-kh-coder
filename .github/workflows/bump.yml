@@ -1,0 +1,60 @@
+name: Bump Version
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.SSH_KEY }}
+          fetch-depth: 0
+      -
+        name: Get tags
+        run: |
+          git ls-remote --tags git@github.com:ko-ichi-h/khcoder.git refs/tags/3.\*\[0-9a-zA-Z\] |
+          awk -f <(cat - <<-'SCRIPT'
+          {
+            split($2,refs,"/")
+            split(refs[3],versions,".")
+            sub("Alpha","-2",versions[2])
+            sub("Beta","-1",versions[2])
+            printf "%s ",refs[3]
+            printf "%s ",versions[1]
+            printf "%d ",versions[2]+2
+            printf "%s ",versions[3]+0
+            printf "%s\n",tolower(substr(versions[3],3))
+          }
+          SCRIPT
+          ) |
+          sort -k 2 |
+          sed -n "/$(git tag --sort=-taggerdate | head -n1 | sed -e 's/-ubuntu[0-9]*//')/,\$p" |
+          tail -n +2 |
+          awk -f <(cat - <<-'SCRIPT'
+          NR==1 { major=$2 ; minor=$3 ; patch=$4 }
+          $2==major && $3==minor && $4==patch { print }
+          SCRIPT
+          ) |
+          tail -n 1 |
+          awk '{print $1}' |
+          echo TOOL_VERSION=$(cat -) | tee /dev/stderr >> $GITHUB_ENV
+      -
+        name: Bump
+        run: |
+          echo sed -i -e "\"s/-b .* &&/-b ${TOOL_VERSION} \\&\\&/\"" Dockerfile | tee /dev/stderr | source /dev/stdin
+          echo sed -i -e "\"s/-   KH Coder .*/-   KH Coder ${TOOL_VERSION}/\"" README.md | tee /dev/stderr | source /dev/stdin
+          if ! git diff --exit-code
+          then
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -am "Bump version to ${TOOL_VERSION}"
+            git tag "${TOOL_VERSION}-$(grep FROM Dockerfile | sed -e 's/FROM //;s/://;s/\..*//')"
+            git push
+            git push --tags
+          fi
