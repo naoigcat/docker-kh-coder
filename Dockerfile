@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-
+LABEL maintainer="naoigcat <17925623+naoigcat@users.noreply.github.com>"
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=ja_JP.UTF-8 \
     LC_ALL=ja_JP.UTF-8 \
