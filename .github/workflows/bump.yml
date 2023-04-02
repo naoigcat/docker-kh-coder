@@ -18,7 +18,7 @@ jobs:
       -
         name: Get tags
         run: |
-          git ls-remote --tags git@github.com:ko-ichi-h/khcoder.git refs/tags/3.\*\[0-9a-zA-Z\] |
+          git ls-remote --tags https://github.com/ko-ichi-h/khcoder.git refs/tags/3.\*\[0-9a-zA-Z\] |
           awk -f <(cat - <<-'SCRIPT'
           {
             split($2,refs,"/")
@@ -34,7 +34,7 @@ jobs:
           SCRIPT
           ) |
           sort -k 2 |
-          sed -n "/$(git tag --sort=taggerdate | head -n1 | sed -e 's/-ubuntu[0-9]*//')/,\$p" |
+          sed -n "/$(git tag --sort=-authordate | head -n1 | sed -e 's/-ubuntu[0-9]*//')/,\$p" |
           awk -f <(cat - <<-'SCRIPT'
           NR==1 { print }
           NR==2 { major=$2 ; minor=$3 ; patch=$4 }
