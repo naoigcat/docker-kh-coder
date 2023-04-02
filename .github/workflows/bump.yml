@@ -34,10 +34,10 @@ jobs:
           SCRIPT
           ) |
           sort -k 2 |
-          sed -n "/$(git tag --sort=-taggerdate | head -n1 | sed -e 's/-ubuntu[0-9]*//')/,\$p" |
-          tail -n +2 |
+          sed -n "/$(git tag --sort=taggerdate | head -n1 | sed -e 's/-ubuntu[0-9]*//')/,\$p" |
           awk -f <(cat - <<-'SCRIPT'
-          NR==1 { major=$2 ; minor=$3 ; patch=$4 }
+          NR==1 { print }
+          NR==2 { major=$2 ; minor=$3 ; patch=$4 }
           $2==major && $3==minor && $4==patch { print }
           SCRIPT
           ) |
