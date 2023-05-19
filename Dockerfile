@@ -18,6 +18,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
         language-pack-ja-base \
         leafpad \
         locales \
+        python3-pip \
         software-properties-common \
         supervisor \
         x11vnc \
@@ -86,14 +87,15 @@ RUN apt-get -y update && \
     R -e 'require("remotes"); install_version("wordcloud")' && \
     apt-get clean && \
     rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
-RUN wget -O mecab-0.996.tar.gz 'https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7cENtOXlicTFaRUE' && \
+RUN pip3 install gdown && \
+    gdown 0B4y35FiV1wh7cENtOXlicTFaRUE && \
     tar zxvf mecab-0.996.tar.gz && \
     cd mecab-0.996/ && \
     case $(dpkg --print-architecture) in arm64) ./configure --with-charset=utf8 --build=arm ;; *) ./configure --with-charset ;; esac && \
     make install && \
     cd .. && \
     rm -rf mecab-0.996* && \
-    wget -O mecab-ipadic-2.7.0-20070801.tar.gz 'https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7MWVlSDBCSXZMTXM' && \
+    gdown 0B4y35FiV1wh7MWVlSDBCSXZMTXM && \
     tar zxfv mecab-ipadic-2.7.0-20070801.tar.gz && \
     cd mecab-ipadic-2.7.0-20070801 && \
     case $(dpkg --print-architecture) in arm64) ./configure --with-charset=utf8 --build=arm ;; *) ./configure --with-charset ;; esac && \
