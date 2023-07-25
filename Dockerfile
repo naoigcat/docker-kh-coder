@@ -154,7 +154,7 @@ RUN { \
     } > /etc/supervisor/conf.d/desktop.conf && \
     cd /root/Desktop && \
     wget -O - http://khcoder.net/tutorial_data_3x.zip | busybox unzip -d /root/Desktop - && \
-    git clone https://github.com/ko-ichi-h/khcoder.git -b 3.Beta.07d && \
+    git clone https://github.com/ko-ichi-h/khcoder.git -b 3.Beta.07e && \
     cd khcoder && \
     { \
         echo "chasenrc_path	" ; \
